@@ -1,179 +1,527 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
   <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-        <title>מנוע החלטות</title>
-      <meta name="apple-mobile-web-app-capable" content="yes">
-      <meta name="apple-mobile-web-app-status-bar-style" content="default">
-      <meta name="apple-mobile-web-app-title" content="החלטות">
-      <meta name="theme-color" content="#2563eb">
-      <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
-      <style>
-                :root { --primary: #2563eb; --success: #16a34a; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --muted: #64748b; --border: #e2e8f0; --danger: #ef4444; }
-                * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-                body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background: var(--bg); color: var(--text); direction: rtl; padding-bottom: 90px; }
-                header { background: var(--card); border-bottom: 1px solid var(--border); padding: 16px 20px; position: sticky; top: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; }
-                header h1 { margin: 0; font-size: 19px; }
-                .container { padding: 16px; max-width: 600px; margin: 0 auto; }
-                .card { background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 16px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-                h2 { margin-top: 0; font-size: 17px; margin-bottom: 12px; }
-                .input-row { display: flex; gap: 8px; margin-bottom: 12px; }
-                input[type="text"], input[type="number"] { flex: 1; font-size: 16px; padding: 12px; border: 1.5px solid var(--border); border-radius: 10px; outline: none; }
-                button { cursor: pointer; border: none; border-radius: 10px; font-weight: 600; font-size: 15px; padding: 12px 16px; }
-                .btn-primary { background: var(--primary); color: #fff; }
-                .btn-sm-danger { background: #fee2e2; color: var(--danger); padding: 6px 12px; font-size: 13px; }
-                .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
-                .score-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
-                .slider-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
-                .slider-val { font-weight: 700; color: var(--primary); font-size: 16px; }
-                input[type="range"] { width: 100%; height: 6px; accent-color: var(--primary); }
-                .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); display: flex; justify-around; padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); z-index: 100; }
-                .tab-btn { background: none; color: var(--muted); font-size: 12px; padding: 6px; display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
-                .tab-btn.active { color: var(--primary); font-weight: 700; }
-                .winner-card { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 16px; padding: 18px; text-align: center; margin-bottom: 16px; }
-                .winner-badge { display: inline-block; background: #dcfce7; color: #15803d; font-weight: 700; padding: 6px 14px; border-radius: 20px; font-size: 14px; margin-bottom: 8px; }
-                .bar-wrap { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; margin-top: 8px; }
-                .bar-fill { height: 100%; background: var(--primary); border-radius: 5px; }
-                .bar-fill.lead { background: var(--success); }
-            </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>מנוע החלטות</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="החלטות">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="כלי אישי להשוואת חלופות לפי קריטריונים משוקללים">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+    <style>
+      :root {
+        --primary: #2563eb;
+        --success: #16a34a;
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --danger: #ef4444;
+      }
+      * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Hebrew", sans-serif;
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        direction: rtl;
+        padding-bottom: 90px;
+      }
+      header {
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+      header h1 { margin: 0; font-size: 19px; }
+      .container { padding: 16px; max-width: 600px; margin: 0 auto; }
+      .card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 18px;
+        margin-bottom: 16px;
+        border: 1px solid var(--border);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      }
+      h2 { margin-top: 0; font-size: 17px; margin-bottom: 12px; }
+      .hint { color: var(--muted); font-size: 13px; margin: 0 0 12px; line-height: 1.4; }
+      .input-row { display: flex; gap: 8px; margin-bottom: 12px; align-items: stretch; }
+      input[type="text"], input[type="number"] {
+        flex: 1;
+        font-size: 16px;
+        padding: 12px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        outline: none;
+        min-width: 0;
+      }
+      input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+      button {
+        cursor: pointer;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 15px;
+        padding: 12px 16px;
+        font-family: inherit;
+      }
+      button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+      .btn-primary { background: var(--primary); color: #fff; white-space: nowrap; }
+      .btn-sm-danger {
+        background: #fee2e2;
+        color: var(--danger);
+        padding: 6px 12px;
+        font-size: 13px;
+        flex-shrink: 0;
+      }
+      .list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 0;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      .list-item:last-child { border-bottom: none; }
+      .list-item strong { word-break: break-word; }
+      .score-box {
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px;
+        margin-bottom: 14px;
+      }
+      .slider-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .slider-val { font-weight: 700; color: var(--primary); font-size: 16px; }
+      /* Keep range LTR so high values are visually to the right of the track */
+      input[type="range"] {
+        width: 100%;
+        height: 6px;
+        accent-color: var(--primary);
+        direction: ltr;
+      }
+      .tab-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--card);
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-around;
+        padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+        z-index: 100;
+      }
+      .tab-btn {
+        background: none;
+        color: var(--muted);
+        font-size: 12px;
+        padding: 6px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        flex: 1;
+      }
+      .tab-btn.active { color: var(--primary); font-weight: 700; }
+      .winner-card {
+        background: #f0fdf4;
+        border: 1.5px solid #86efac;
+        border-radius: 16px;
+        padding: 18px;
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .winner-badge {
+        display: inline-block;
+        background: #dcfce7;
+        color: #15803d;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+      .bar-wrap {
+        background: #e2e8f0;
+        height: 10px;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-top: 8px;
+        direction: ltr;
+      }
+      .bar-fill { height: 100%; background: var(--primary); border-radius: 5px; }
+      .bar-fill.lead { background: var(--success); }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0,0,0,0);
+        border: 0;
+      }
+      .empty { color: var(--muted); margin: 0; }
+      .tie-note { color: var(--muted); font-size: 13px; margin-top: 8px; }
+      @media (max-width: 400px) {
+        .input-row { flex-wrap: wrap; }
+        .input-row .btn-primary { width: 100%; }
+      }
+    </style>
   </head>
   <body>
     <header>
-          <h1>⚖️ מנוע החלטות</h1>
-        <button class="btn-sm-danger" onclick="resetDecision()">החלטה חדשה</button>button>
+      <h1>⚖️ מנוע החלטות</h1>
+      <button type="button" class="btn-sm-danger" id="btnReset">החלטה חדשה</button>
     </header>
-  <div class="container">
-      <div id="tab-alts" class="tab-view">
-              <div class="card">
-                          <h2>1. מה האפשרוות שביניהן מתלבטים?</h2>
-                          <div class="input-row">
-                                          <input type="text" id="newAlt" placeholder="שם חלופה (למשל: הצעה א')...">
-                                          <button class="btn-primary" onclick="addAlt()">הוסף</button>button>
-                          </div>div>
-                          <div id="altsList"></div>div>
-              </div>div>
-      </div>div>
-      <div id="tab-crits" class="tab-view" style="display:none;">
-              <div class="card">
-                          <h2>2. מה חשוב בהחלטה (קריטריונים)?</h2>
-                          <div class="input-row">
-                                          <input type="text" id="newCrit" placeholder="שם קיטריון..." style="flex:2;">
-                                          <input type="number" id="newCritWeight" placeholder="משקל (1-10)" min="1" max="10" value="7" style="flex:1;">
-                                          <button class="btn-primary" onclick="addCrit()">הוסף</button>button>
-                          </div>div>
-                          <div id="critsList"></div>div>
-              </div>div>
-      </div>div>
-      <div id="tab-scores" class="tab-view" style="display:none;">
-              <div class="card">
-                          <h2>3. מתן ציונים (1 עד 10)</h2>
-                          <div id="scoringSections"></div>div>
-              </div>div>
-      </div>div>
-      <div id="tab-results" class="tab-view" style="display:none;">
-              <div id="winnerBanner"></div>div>
-              <div class="card">
-                          <h2>דירוג סופי</h2>
-                          <div id="resultsRankings"></div>div>
-              </div>div>
-      </div>div>
-  </div>div>
-  <div class="tab-bar">
-      <button class="tab-btn active" onclick="switchTab('alts', this)"><span>🔀</span><span>חלופות</span></button>button>
-      <button class="tab-btn" onclick="switchTab('crits', this)"><span>🎯</span><span>קריטריונים</span></button>button>
-      <button class="tab-btn" onclick="switchTab('scores', this)"><span>📝</span><span>ציונים</span></button>button>
-      <button class="tab-btn" onclick="switchTab('results', this)"><span>🏆</span><span>תוצאות</span></button>button>
-  </div>div>
-  <script>
-    let appData = {
-          alternatives: ["הצעה א'", "הצעה ב'"],
-          criteria: [{name: "תשואה / שכר", weight: 8}, {name: "איזון ורוגע", weight: 9}, {name: "פוטנציאל", weight: 7}],
-          scores: {"הצעה א'": {"תשואה / שכר": 9, "איזון ורוגע": 5, "פוטנציאל": 8}, "הצעה ב'": {"תשואה / שכר": 7, "איזון ורוגע": 9, "פוטנציאל": 6}}
-    };
-    function saveStorage() { localStorage.setItem("decision_data", JSON.stringify(appData)); }
-    function loadStorage() { const raw = localStorage.getItem("decision_data"); if (raw) try { appData = JSON.parse(raw); } catch(e){} }
-    function switchTab(id, el) {
-          document.querySelectorAll('.tab-view').forEach(v => v.style.display = 'none');
-          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-          document.getElementById('tab-' + id).style.display = 'block';
-          if (el) el.classList.add('active');
-          if (id === 'scores') renderScores();
-          if (id === 'results') renderResults();
-    }
-    function renderAlts() {
-          const list = document.getElementById("altsList");
-          if (!appData.alternatives.length) return list.innerHTML = "<p style='color:var(--muted);'>טרם נוספו חלופות.</p>";
-          list.innerHTML = appData.alternatives.map(a => `<div class="list-item"><strong>${a}</strong><button class="btn-sm-danger" onclick="removeAlt('${a}')">מחק</button></div>`).join("");
-    }
-    function addAlt() {
-          const val = document.getElementById("newAlt").value.trim();
-          if (val && !appData.alternatives.includes(val)) {
-                    appData.alternatives.push(val);
-                    appData.scores[val] = {};
-                    appData.criteria.forEach(c => appData.scores[val][c.name] = 5);
-                    document.getElementById("newAlt").value = "";
-                    saveStorage(); renderAlts();
-          }
-    }
-    function removeAlt(a) { appData.alternatives = appData.alternatives.filter(x => x !== a); delete appData.scores[a]; saveStorage(); renderAlts(); }
-    function renderCrits() {
-          const list = document.getElementById("critsList");
-          if (!appData.criteria.length) return list.innerHTML = "<p style='color:var(--muted);'>טרם נוספו קריטריונים.</p>";
-          list.innerHTML = appData.criteria.map(c => `<div class="list-item"><div><strong>${c.name}</strong> <span style='color:var(--muted); font-size:13px;'>(משקל: ${c.weight})</span></div><button class="btn-sm-danger" onclick="removeCrit('${c.name}')">מחק</button></div>`).join("");
-    }
-    function addCrit() {
-          const name = document.getElementById("newCrit").value.trim();
-          const weight = parseInt(document.getElementById("newCritWeight").value) || 5;
-          if (name && !appData.criteria.some(c => c.name === name)) {
-                    appData.criteria.push({name, weight});
-                    appData.alternatives.forEach(a => { if (!appData.scores[a]) appData.scores[a] = {}; appData.scores[a][name] = 5; });
-                    document.getElementById("newCrit").value = "";
-                    saveStorage(); renderCrits();
-          }
-    }
-    function removeCrit(n) { appData.criteria = appData.criteria.filter(c => c.name !== n); appData.alternatives.forEach(a => { if (appData.scores[a]) delete appData.scores[a][n]; }); saveStorage(); renderCrits(); }
-    function renderScores() {
-          const cont = document.getElementById("scoringSections");
-          if (!appData.alternatives.length || !appData.criteria.length) return cont.innerHTML = "<p style='color:var(--muted);'>יש להגדיר חלופות וקריטריונים תחילה.</p>";
-          let html = "";
-          appData.alternatives.forEach(a => {
-                    html += `<h3 style="color:var(--primary); font-size:16px; margin-top:16px;">${a}</h3>`;
-                    appData.criteria.forEach(c => {
-                                  const sc = (appData.scores[a] && appData.scores[a][c.name]) || 5;
-                                  html += `<div class="score-box"><div class="slider-header"><span><strong>${c.name}</strong> (משקל: ${c.weight})</span><span class="slider-val" id="val-${encodeURIComponent(a)}-${encodeURIComponent(c.name)}">${sc}</span></div><input type="range" min="1" max="10" value="${sc}" oninput="onScore('${a}','${c.name}',this.value)"></div>`;
-                    });
-          });
-          cont.innerHTML = html;
-    }
-    function onScore(a, c, v) {
-          const el = document.getElementById(`val-${encodeURIComponent(a)}-${encodeURIComponent(c)}`);
-          if (el) el.innerText = v;
+
+    <main class="container">
+      <section id="tab-alts" class="tab-view" role="tabpanel" aria-labelledby="tabbtn-alts">
+        <div class="card">
+          <h2>1. מה האפשרויות שביניהן מתלבטים?</h2>
+          <p class="hint">הוסיפו לפחות שתי חלופות להשוואה.</p>
+          <div class="input-row">
+            <label class="sr-only" for="newAlt">שם חלופה</label>
+            <input type="text" id="newAlt" placeholder="שם חלופה (למשל: הצעה א׳)..." autocomplete="off">
+            <button type="button" class="btn-primary" id="btnAddAlt">הוסף</button>
+          </div>
+          <div id="altsList"></div>
+        </div>
+      </section>
+
+      <section id="tab-crits" class="tab-view" style="display:none;" role="tabpanel" aria-labelledby="tabbtn-crits">
+        <div class="card">
+          <h2>2. מה חשוב בהחלטה (קריטריונים)?</h2>
+          <p class="hint">משקל 1–10: כמה הקריטריון חשוב ביחס לאחרים.</p>
+          <div class="input-row">
+            <label class="sr-only" for="newCrit">שם קריטריון</label>
+            <input type="text" id="newCrit" placeholder="שם קריטריון..." style="flex:2;" autocomplete="off">
+            <label class="sr-only" for="newCritWeight">משקל</label>
+            <input type="number" id="newCritWeight" placeholder="משקל" min="1" max="10" value="7" style="flex:1;" inputmode="numeric">
+            <button type="button" class="btn-primary" id="btnAddCrit">הוסף</button>
+          </div>
+          <div id="critsList"></div>
+        </div>
+      </section>
+
+      <section id="tab-scores" class="tab-view" style="display:none;" role="tabpanel" aria-labelledby="tabbtn-scores">
+        <div class="card">
+          <h2>3. מתן ציונים (1 עד 10)</h2>
+          <p class="hint">דרגו עד כמה כל חלופה עומדת בכל קריטריון.</p>
+          <div id="scoringSections"></div>
+        </div>
+      </section>
+
+      <section id="tab-results" class="tab-view" style="display:none;" role="tabpanel" aria-labelledby="tabbtn-results">
+        <div id="winnerBanner"></div>
+        <div class="card">
+          <h2>דירוג סופי</h2>
+          <div id="resultsRankings"></div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tab-bar" role="tablist" aria-label="שלבים">
+      <button type="button" class="tab-btn active" role="tab" id="tabbtn-alts" aria-selected="true" data-tab="alts"><span aria-hidden="true">🔀</span><span>חלופות</span></button>
+      <button type="button" class="tab-btn" role="tab" id="tabbtn-crits" aria-selected="false" data-tab="crits"><span aria-hidden="true">🎯</span><span>קריטריונים</span></button>
+      <button type="button" class="tab-btn" role="tab" id="tabbtn-scores" aria-selected="false" data-tab="scores"><span aria-hidden="true">📝</span><span>ציונים</span></button>
+      <button type="button" class="tab-btn" role="tab" id="tabbtn-results" aria-selected="false" data-tab="results"><span aria-hidden="true">🏆</span><span>תוצאות</span></button>
+    </nav>
+
+    <script>
+    (function () {
+      const STORAGE_KEY = "decision_data";
+      const DEFAULT_DATA = {
+        alternatives: ["הצעה א׳", "הצעה ב׳"],
+        criteria: [
+          { name: "תשואה / שכר", weight: 8 },
+          { name: "איזון ורוגע", weight: 9 },
+          { name: "פוטנציאל", weight: 7 }
+        ],
+        scores: {
+          "הצעה א׳": { "תשואה / שכר": 9, "איזון ורוגע": 5, "פוטנציאל": 8 },
+          "הצעה ב׳": { "תשואה / שכר": 7, "איזון ורוגע": 9, "פוטנציאל": 6 }
+        }
+      };
+
+      let appData = structuredClone
+        ? structuredClone(DEFAULT_DATA)
+        : JSON.parse(JSON.stringify(DEFAULT_DATA));
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function clampWeight(n) {
+        const w = parseInt(n, 10);
+        if (Number.isNaN(w)) return 5;
+        return Math.min(10, Math.max(1, w));
+      }
+
+      function saveStorage() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+        } catch (e) { /* quota / private mode */ }
+      }
+
+      function loadStorage() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const parsed = JSON.parse(raw);
+          if (!parsed || !Array.isArray(parsed.alternatives) || !Array.isArray(parsed.criteria) || typeof parsed.scores !== "object") return;
+          appData = parsed;
+        } catch (e) { /* ignore corrupt */ }
+      }
+
+      function switchTab(id) {
+        document.querySelectorAll(".tab-view").forEach(v => { v.style.display = "none"; });
+        document.querySelectorAll(".tab-btn").forEach(b => {
+          const on = b.dataset.tab === id;
+          b.classList.toggle("active", on);
+          b.setAttribute("aria-selected", on ? "true" : "false");
+        });
+        const panel = document.getElementById("tab-" + id);
+        if (panel) panel.style.display = "block";
+        if (id === "scores") renderScores();
+        if (id === "results") renderResults();
+      }
+
+      function renderAlts() {
+        const list = document.getElementById("altsList");
+        if (!appData.alternatives.length) {
+          list.innerHTML = "<p class='empty'>טרם נוספו חלופות.</p>";
+          return;
+        }
+        list.innerHTML = appData.alternatives.map((a, i) =>
+          `<div class="list-item"><strong>${escapeHtml(a)}</strong>` +
+          `<button type="button" class="btn-sm-danger" data-action="remove-alt" data-index="${i}">מחק</button></div>`
+        ).join("");
+      }
+
+      function addAlt() {
+        const input = document.getElementById("newAlt");
+        const val = input.value.trim();
+        if (!val) return;
+        if (appData.alternatives.includes(val)) {
+          input.focus();
+          return;
+        }
+        appData.alternatives.push(val);
+        appData.scores[val] = {};
+        appData.criteria.forEach(c => { appData.scores[val][c.name] = 5; });
+        input.value = "";
+        saveStorage();
+        renderAlts();
+        input.focus();
+      }
+
+      function removeAlt(index) {
+        const a = appData.alternatives[index];
+        if (a == null) return;
+        appData.alternatives.splice(index, 1);
+        delete appData.scores[a];
+        saveStorage();
+        renderAlts();
+      }
+
+      function renderCrits() {
+        const list = document.getElementById("critsList");
+        if (!appData.criteria.length) {
+          list.innerHTML = "<p class='empty'>טרם נוספו קריטריונים.</p>";
+          return;
+        }
+        list.innerHTML = appData.criteria.map((c, i) =>
+          `<div class="list-item"><div><strong>${escapeHtml(c.name)}</strong> ` +
+          `<span style="color:var(--muted); font-size:13px;">(משקל: ${c.weight})</span></div>` +
+          `<button type="button" class="btn-sm-danger" data-action="remove-crit" data-index="${i}">מחק</button></div>`
+        ).join("");
+      }
+
+      function addCrit() {
+        const nameInput = document.getElementById("newCrit");
+        const name = nameInput.value.trim();
+        const weight = clampWeight(document.getElementById("newCritWeight").value);
+        if (!name) return;
+        if (appData.criteria.some(c => c.name === name)) {
+          nameInput.focus();
+          return;
+        }
+        appData.criteria.push({ name, weight });
+        appData.alternatives.forEach(a => {
           if (!appData.scores[a]) appData.scores[a] = {};
-          appData.scores[a][c] = parseFloat(v);
-          saveStorage();
-    }
-    function renderResults() {
-          const wDiv = document.getElementById("winnerBanner");
-          const rDiv = document.getElementById("resultsRankings");
-          if (!appData.alternatives.length || !appData.criteria.length) { wDiv.innerHTML = ""; rDiv.innerHTML = "<p style='color:var(--muted);'>אין מספיק נתונים לחישוב.</p>"; return; }
-          let maxW = appData.criteria.reduce((s, c) => s + c.weight, 0) || 1;
-          let res = appData.alternatives.map(a => {
-                    let sum = 0;
-                    appData.criteria.forEach(c => { sum += ((appData.scores[a] && appData.scores[a][c.name]) || 5) * c.weight; });
-                    return { name: a, score: sum.toFixed(1), pct: ((sum / (maxW * 10)) * 100).toFixed(1) };
-          }).sort((x, y) => y.score - x.score);
-          const win = res[0];
-          wDiv.innerHTML = `<div class="winner-card"><span class="winner-badge">🏆 הבחירה המובילה</span><h2 style="font-size:22px; color:#166534; margin:6px 0;">${win.name}</h2><p style="margin:0; color:#15803d;">התאמה של <strong>${win.pct}%</strong> לקריטריונים</p></div>`;
-          rDiv.innerHTML = res.map((r, i) => `<div style="padding:12px 0; border-bottom:1px solid var(--border);"><div style="display:flex; justify-content:space-between;"><strong>#${i+1} ${r.name}</strong><span style="font-weight:700; color:${i===0?'var(--success)':'var(--text)'}">${r.pct}% (${r.score} נק')</span></div><div class="bar-wrap"><div class="bar-fill ${i===0?'lead':''}" style="width:${r.pct}%;"></div></div></div>`).join("");
-    }
-    function resetDecision() { if (confirm("לאפס את ההחלטה?")) { appData = { alternatives: [], criteria: [], scores: {} }; saveStorage(); renderAlts(); renderCrits(); switchTab('alts'); } }
-    window.onload = function() { loadStorage(); renderAlts(); renderCrits(); };
-  </script>
+          appData.scores[a][name] = 5;
+        });
+        nameInput.value = "";
+        document.getElementById("newCritWeight").value = "7";
+        saveStorage();
+        renderCrits();
+        nameInput.focus();
+      }
+
+      function removeCrit(index) {
+        const c = appData.criteria[index];
+        if (!c) return;
+        appData.criteria.splice(index, 1);
+        appData.alternatives.forEach(a => {
+          if (appData.scores[a]) delete appData.scores[a][c.name];
+        });
+        saveStorage();
+        renderCrits();
+      }
+
+      function renderScores() {
+        const cont = document.getElementById("scoringSections");
+        if (!appData.alternatives.length || !appData.criteria.length) {
+          cont.innerHTML = "<p class='empty'>יש להגדיר חלופות וקריטריונים תחילה.</p>";
+          return;
+        }
+        let html = "";
+        appData.alternatives.forEach((a, ai) => {
+          html += `<h3 style="color:var(--primary); font-size:16px; margin-top:16px;">${escapeHtml(a)}</h3>`;
+          appData.criteria.forEach((c, ci) => {
+            const sc = (appData.scores[a] && appData.scores[a][c.name]) || 5;
+            const id = `score-${ai}-${ci}`;
+            html += `<div class="score-box">` +
+              `<div class="slider-header"><span><strong>${escapeHtml(c.name)}</strong> (משקל: ${c.weight})</span>` +
+              `<span class="slider-val" id="val-${id}">${sc}</span></div>` +
+              `<label class="sr-only" for="${id}">ציון ${escapeHtml(a)} ב${escapeHtml(c.name)}</label>` +
+              `<input type="range" id="${id}" min="1" max="10" step="1" value="${sc}" ` +
+              `data-action="score" data-ai="${ai}" data-ci="${ci}"></div>`;
+          });
+        });
+        cont.innerHTML = html;
+      }
+
+      function onScore(ai, ci, v) {
+        const a = appData.alternatives[ai];
+        const c = appData.criteria[ci];
+        if (!a || !c) return;
+        const num = Math.min(10, Math.max(1, parseFloat(v) || 5));
+        const el = document.getElementById(`val-score-${ai}-${ci}`);
+        if (el) el.textContent = String(num);
+        if (!appData.scores[a]) appData.scores[a] = {};
+        appData.scores[a][c.name] = num;
+        saveStorage();
+      }
+
+      function renderResults() {
+        const wDiv = document.getElementById("winnerBanner");
+        const rDiv = document.getElementById("resultsRankings");
+        if (!appData.alternatives.length || !appData.criteria.length) {
+          wDiv.innerHTML = "";
+          rDiv.innerHTML = "<p class='empty'>אין מספיק נתונים לחישוב.</p>";
+          return;
+        }
+        const maxW = appData.criteria.reduce((s, c) => s + c.weight, 0) || 1;
+        const res = appData.alternatives.map(a => {
+          let sum = 0;
+          appData.criteria.forEach(c => {
+            sum += ((appData.scores[a] && appData.scores[a][c.name]) || 5) * c.weight;
+          });
+          return {
+            name: a,
+            score: sum,
+            pct: (sum / (maxW * 10)) * 100
+          };
+        }).sort((x, y) => y.score - x.score);
+
+        const win = res[0];
+        const tied = res.length > 1 && Math.abs(res[0].score - res[1].score) < 1e-9;
+        wDiv.innerHTML =
+          `<div class="winner-card"><span class="winner-badge">🏆 ${tied ? "תיקו בראש" : "הבחירה המובילה"}</span>` +
+          `<h2 style="font-size:22px; color:#166534; margin:6px 0;">${escapeHtml(win.name)}</h2>` +
+          `<p style="margin:0; color:#15803d;">התאמה של <strong>${win.pct.toFixed(1)}%</strong> לקריטריונים</p>` +
+          (tied ? `<p class="tie-note">יש עוד חלופה עם אותו ציון — בדקו את הדירוג למטה.</p>` : "") +
+          `</div>`;
+
+        rDiv.innerHTML = res.map((r, i) =>
+          `<div style="padding:12px 0; border-bottom:1px solid var(--border);">` +
+          `<div style="display:flex; justify-content:space-between; gap:8px;">` +
+          `<strong>#${i + 1} ${escapeHtml(r.name)}</strong>` +
+          `<span style="font-weight:700; color:${i === 0 ? "var(--success)" : "var(--text)"}; white-space:nowrap;">` +
+          `${r.pct.toFixed(1)}% (${r.score.toFixed(1)} נק')</span></div>` +
+          `<div class="bar-wrap"><div class="bar-fill ${i === 0 ? "lead" : ""}" style="width:${Math.min(100, r.pct)}%;"></div></div></div>`
+        ).join("");
+      }
+
+      function resetDecision() {
+        if (!confirm("לאפס את ההחלטה? כל החלופות, הקריטריונים והציונים יימחקו.")) return;
+        appData = { alternatives: [], criteria: [], scores: {} };
+        saveStorage();
+        renderAlts();
+        renderCrits();
+        switchTab("alts");
+      }
+
+      function onListClick(e) {
+        const btn = e.target.closest("[data-action]");
+        if (!btn) return;
+        const action = btn.dataset.action;
+        if (action === "remove-alt") removeAlt(parseInt(btn.dataset.index, 10));
+        if (action === "remove-crit") removeCrit(parseInt(btn.dataset.index, 10));
+      }
+
+      function bind() {
+        document.getElementById("btnReset").addEventListener("click", resetDecision);
+        document.getElementById("btnAddAlt").addEventListener("click", addAlt);
+        document.getElementById("btnAddCrit").addEventListener("click", addCrit);
+        document.getElementById("newAlt").addEventListener("keydown", e => {
+          if (e.key === "Enter") { e.preventDefault(); addAlt(); }
+        });
+        document.getElementById("newCrit").addEventListener("keydown", e => {
+          if (e.key === "Enter") { e.preventDefault(); addCrit(); }
+        });
+        document.getElementById("newCritWeight").addEventListener("keydown", e => {
+          if (e.key === "Enter") { e.preventDefault(); addCrit(); }
+        });
+        document.getElementById("altsList").addEventListener("click", onListClick);
+        document.getElementById("critsList").addEventListener("click", onListClick);
+        document.getElementById("scoringSections").addEventListener("input", e => {
+          const el = e.target;
+          if (el.dataset.action !== "score") return;
+          onScore(parseInt(el.dataset.ai, 10), parseInt(el.dataset.ci, 10), el.value);
+        });
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+          btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+        });
+      }
+
+      // expose for debugging / compatibility
+      window.appData = appData;
+      window.switchTab = switchTab;
+
+      loadStorage();
+      // re-bind proxy after load
+      Object.defineProperty(window, "appData", {
+        get() { return appData; },
+        set(v) { appData = v; }
+      });
+      bind();
+      renderAlts();
+      renderCrits();
+    })();
+    </script>
   </body>
-</html>html>
-  </script></span></span></h2></h1>
-    </header>
-  </body>
-      </style></title>
-  </head>
+</html>
